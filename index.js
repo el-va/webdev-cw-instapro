@@ -1,4 +1,4 @@
-import { getPosts, getUserPost, addPosts } from "./api.js";
+import { getPosts, getUserPosts, addPosts } from "./api.js";
 import { renderAddPostPageComponent } from "./components/add-post-page-component.js";
 import { renderAuthPageComponent } from "./components/auth-page-component.js";
 import {
@@ -15,7 +15,7 @@ import {
   removeUserFromLocalStorage,
   saveUserToLocalStorage,
 } from "./helpers.js";
-import { renderPostsPageComponentUser } from "./components/user-posts-page-component.js";
+import { renderPostsPageComponentUser } from "./components/user-post-page-component.js";
 
 export let user = getUserFromLocalStorage();
 export let page = null;
@@ -72,7 +72,7 @@ export const goToPage = (newPage, data) => {
       // console.log("Открываю страницу пользователя: ", data.userId);
       page = LOADING_PAGE;
       renderApp();
-      return getUserPost({ id: data.id, token: getToken() })
+      return getUserPosts({ userId: data.userId, token: getToken() })
       .then((newPosts) => {
         page = USER_POSTS_PAGE;
         posts = newPosts;
@@ -92,7 +92,7 @@ export const goToPage = (newPage, data) => {
   throw new Error("страницы не существует");
 };
 
-const renderApp = () => {
+export const renderApp = () => {
   const appEl = document.getElementById("app");
   if (page === LOADING_PAGE) {
     return renderLoadingPageComponent({

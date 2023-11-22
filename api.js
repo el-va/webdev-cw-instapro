@@ -1,6 +1,7 @@
 // Замени на свой, чтобы получить независимый от других набор данных.
 // "боевая" версия инстапро лежит в ключе prod
 // const personalKey = "prod";
+import { sanitizeHtml } from "./sanitizeHtml";
 const personalKey = "vakulenko";
 const baseHost = "https://webdev-hw-api.vercel.app";
 const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`;
@@ -23,8 +24,8 @@ export function getPosts({ token }) {
     });
 }
 
-export function getUserPost({ id, token }) {
-  return fetch( postsHost + '/user-posts/' + id, {
+export function getUserPosts({ id, token }) {
+  return fetch( postsHost + "/user-posts/" + id, {
     method: "GET",
     headers: {
       Authorization: token,
@@ -49,11 +50,12 @@ export function addPosts({ description, imageUrl, token }) {
       Authorization: token,
     },
     body: JSON.stringify({
-      description,
+      description: sanitizeHtml(description),
       imageUrl,
     }),
   }).then((response) => {
     if (response.status === 400) {
+      alert("Не выбрана фотография");
       throw new Error("Фото не выбрано");
     }
     return response.json();
@@ -65,9 +67,9 @@ export function registerUser({ login, password, name, imageUrl }) {
   return fetch(baseHost + "/api/user", {
     method: "POST",
     body: JSON.stringify({
-      login,
-      password,
-      name,
+      login: sanitizeHtml(login),
+      password: sanitizeHtml(password),
+      name: sanitizeHtml(name),
       imageUrl,
     }),
   }).then((response) => {
@@ -82,8 +84,8 @@ export function loginUser({ login, password }) {
   return fetch(baseHost + "/api/user/login", {
     method: "POST",
     body: JSON.stringify({
-      login,
-      password,
+      login: sanitizeHtml(login),
+      password: sanitizeHtml(password),
     }),
   }).then((response) => {
     if (response.status === 400) {
@@ -106,7 +108,7 @@ export function uploadImage({ file }) {
   });
 }
 
-export const addLike = ({id, token}) => {
+export const addLike = ({ id, token }) => {
   return fetch(`${postsHost}/${id}/like`, 
   {
     method: "POST",
@@ -122,7 +124,7 @@ export const addLike = ({id, token}) => {
   });
 };
 
-export const deleteLike = ({id, token}) => {
+export const deleteLike = ({ id, token }) => {
   return fetch(`${postsHost}/${id}/dislike`, 
   {
     method: "POST",

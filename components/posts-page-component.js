@@ -13,11 +13,11 @@ export function LikeDislike() {
     likeButton.addEventListener("click", (event) => {
       event.stopPropagation();
 
-      let id = likeButton.dataset.id;
+      let id = likeButton.dataset.postId;
       let token = getToken();
 
       if (token === undefined) {
-        alert("Пожалуйста, авторизуйтесь");
+        alert("Ставить лайки могут только авторизованные пользователи");
       } else {
         likeButton.dataset.isLiked === "true"
   
@@ -66,7 +66,7 @@ const renderLike = ({ responseData }) => {
 
 export function renderPostsPageComponent({ appEl }) {
   // TODO: реализовать рендер постов из api
-  // console.log("Актуальный список постов:", posts);
+  console.log("Актуальный список постов:", posts);
 
   /**
    * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
@@ -211,7 +211,7 @@ export function renderPostsPageComponent({ appEl }) {
   for (let userEl of document.querySelectorAll(".post-header")) {
     userEl.addEventListener("click", () => {
       goToPage(USER_POSTS_PAGE, {
-        userId: userEl.dataset.userId,
+        id: userEl.dataset.userId,
       });
     });
   }
