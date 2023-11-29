@@ -72,15 +72,12 @@ export const goToPage = (newPage, data) => {
       // console.log("Открываю страницу пользователя: ", data.userId);
       page = LOADING_PAGE;
       renderApp();
-      return getUserPosts({ userId: data.userId, token: getToken() })
+      return getUserPosts({ id: data.id, token: getToken() })
       .then((newPosts) => {
         page = USER_POSTS_PAGE;
         posts = newPosts;
         return renderApp();
       })
-      // page = USER_POSTS_PAGE;
-      // posts = [];
-      // return renderApp();
     }
 
     page = newPage;
