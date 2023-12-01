@@ -58,7 +58,7 @@ export function addPosts({ description, imageUrl, token }) {
       return response.json();
     } else {
       alert("Не выбрана фотография или не добавлено описание");
-      throw new Error("Фото не выбрано");
+      throw new Error("Не выбрана фотография или не добавлено описание"); 
     }
     });
   };
