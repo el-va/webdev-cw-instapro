@@ -24,7 +24,7 @@ export function LikeDislike() {
 
               likeButton.innerHTML = `<img src="./assets/images/like-not-active.svg">`;
 
-              renderLike({ responseData });
+              renderLike({ responseData, likeButton });
               likeButton.dataset.isLiked = "false";
             })
           : addLike({ id, token })
@@ -32,7 +32,7 @@ export function LikeDislike() {
 
               likeButton.innerHTML = `<img src="./assets/images/like-active.svg">`;
 
-              renderLike({ responseData });
+              renderLike({ responseData, likeButton });
               likeButton.dataset.isLiked = "true";
             });
       }
@@ -40,26 +40,23 @@ export function LikeDislike() {
   }
 }
 
-const renderLike = ({ responseData }) => {
+const renderLike = ({ responseData, likeButton }) => {
 
-  const postLikesText = document.querySelector(".post-likes-text");
-  postLikesText.innerHTML = `<p class="post-likes-text">
-    Нравится: <strong>${
-      responseData.post.likes.length < 2
-        ? `<strong>${
-            0 === responseData.post.likes.length
-              ? "0"
-              : responseData.post.likes.map(({ name: post }) => post).join(", ")
-          }</strong>`
-        : `<strong>${
-            responseData.post.likes[
-              Math.floor(Math.random() * responseData.post.likes.length)
-             ].name
-          }</strong>
-      и <strong>еще ${(responseData.post.likes.length - 1).toString()}</strong>`
-    }
-    </strong>
-  </p>`;
+  const postLikesText = likeButton.closest('.post').querySelector(".post-likes-text");
+  const likesCount = responseData.post.likes.length;
+
+  let likesText = "";
+  if (likesCount === 0) {
+    likesText = `Нравится: <strong>0</strong>`;
+  } else if (likesCount === 1) {
+    likesText = `Нравится: <strong>${JSON.stringify(responseData.post.likes[0].name) === "{}" ? "Кому-то" : responseData.post.likes[0].name}</strong>` ;
+  } else {
+    const likesCounts = likesCount - 1;
+    const likesTexts = `<strong>еще ${likesCounts.toString()}</strong>`;
+    likesText = `Нравится: <strong>${JSON.stringify(responseData.post.likes[responseData.post.likes.length - 1].name) === "{}" ? "Кому-то" : responseData.post.likes[responseData.post.likes.length - 1].name}</strong> и ${likesTexts}`;
+  }
+
+  postLikesText.innerHTML = `<p>${likesText}</p>`;
 };
 
 export function renderPostsPageComponent({ appEl }) {
@@ -72,6 +69,16 @@ export function renderPostsPageComponent({ appEl }) {
    */
 
   const postsHtml = posts.map((post, index) => {
+    let likesText;
+    if (post.likes.length === 0) { 
+      likesText = `Нравится: <strong>0</strong>`; 
+    } else if (post.likes.length === 1) { 
+      likesText = `Нравится: <strong>${JSON.stringify(post.likes[0].name) === "{}" ? "Кому-то" : post.likes[0].name}</strong>`; 
+    } else { 
+      const likesCounts = post.likes.length - 1; 
+      const likesTexts = `<strong>еще ${likesCounts.toString()}</strong>`; 
+      likesText = `Нравится: <strong>${JSON.stringify(post.likes[post.likes.length - 1].name) === "{}" ? "Кому-то" : post.likes[post.likes.length - 1].name}</strong> и ${likesTexts}`; 
+    }
     return `
     <li class="post">
     <div class="post-header" data-user-id="${post.user.id}">
@@ -83,7 +90,7 @@ export function renderPostsPageComponent({ appEl }) {
     </div>
     <div class="post-footer">
     <div class="post-likes">
-      <button data-post-id="${post.id}" data-isLiked="${
+      <button data-post-id="${post.id}" data-is-liked="${
         post.isLiked
       }" class="like-button" data-index=${index}>
         <img src="${post.isLiked
@@ -92,7 +99,7 @@ export function renderPostsPageComponent({ appEl }) {
         }">
       </button>
       <p class="post-likes-text">
-      Нравится: <strong>${post.likes.length}</strong>
+      ${likesText}
     </p>
     </div>
     </div>
